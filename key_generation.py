@@ -35,12 +35,11 @@ def run_key_gen_menu():
         "rolls or provide 32 random bytes from quality random source you trust "
         "in (H)ex? "
         "You can also (E)xit.",
-        "R/D/H/E",
-        { 'R': make_key_from_OS,
-          'D': make_key_from_dice_rolls,
-          'H': make_key_from_hex_string,
-          'E': always_return_false,
-          }
+        ( ('R', make_key_from_OS),
+          ('D', make_key_from_dice_rolls),
+          ('H', make_key_from_hex_string),
+          ('E', always_return_false),
+          )
         )
     if isinstance(key, bytes):
         return key
@@ -57,11 +56,11 @@ def generate_key_menu():
         "Do you want to randomly generate a private (K)ey and print it, "
         "randomly generate a (S)eed, supply a (P)assphrase, "
         "or E(xit) to the main menu?",
-        "K/S/P/E",
-        { 'K': run_key_gen_menu,
-          'S': run_seed_gen_menu,
-          'P': run_passphrase_menu,
-          'E': always_return_false, },
+        ( ('K', run_key_gen_menu),
+          ('S', run_seed_gen_menu),
+          ('P', run_passphrase_menu),
+          ('E', always_return_false),
+          )
         )
 
 if __name__ == "__main__":

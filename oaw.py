@@ -25,11 +25,10 @@ except ImportError:
 def main_menu():
     run_menu( "Do you want to (G)enerate a private key, (R)estore a "
               "private key or Q(uit)?",
-              "G/R/Q",
-              { 'G': generate_key_menu,
-                'R': restore_key_menu,
-                'Q': always_return_false,
-                }
+              ( ('G', generate_key_menu),
+                ('R', restore_key_menu),
+                ('Q', always_return_false),
+                )
               )
 
 if __name__ == "__main__":

@@ -27,11 +27,11 @@ def restore_key_menu():
         "generated from a (S)eed, "
         "derived from a (P)assphrase or "
         "(E)xit to the main menu?",
-        "X/S/P/E",
-        { 'X': restore_xor_scheme_key_menu,
-          'S': restore_key_from_seed_menu,
-          'P': restore_key_from_passphrase_menu,
-          'E': always_return_false, },
+        ( ('X', restore_xor_scheme_key_menu),
+          ('S', restore_key_from_seed_menu),
+          ('P', restore_key_from_passphrase_menu),
+          ('E', always_return_false),
+          )
         )
 
 if __name__ == "__main__":
