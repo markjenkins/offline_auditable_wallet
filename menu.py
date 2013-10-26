@@ -9,10 +9,10 @@
 
 PROMPT_CHARACTERS = "> "
 
-def always_return_false():
+def always_return_false(*args, **kargs):
     return False
 
-def missing_menu_item():
+def missing_menu_item(*args, **kargs):
     pass
 
 def do_menu_run(main_msg, options, *args, **kargs):
