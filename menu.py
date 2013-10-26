@@ -12,10 +12,14 @@ PROMPT_CHARACTERS = "> "
 def always_return_false():
     return False
 
-def run_breakable_menu(main_msg, prompt, options):
+def missing_menu_item():
     pass
 
 def run_menu(main_msg, prompt, options):
-    print(main_msg)
-    return options.get( input("%s %s" % (prompt, PROMPT_CHARACTERS)),
-                        lambda : None )()
+    while True:
+        print(main_msg)
+        return_value =  options.get(
+            input("%s %s" % (prompt, PROMPT_CHARACTERS)),
+            lambda : None )()
+        if return_value is False:
+            break

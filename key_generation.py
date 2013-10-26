@@ -10,7 +10,7 @@
 # http://www.gnu.org/prep/maintain/html_node/License-Notices-for-Other-Files.html
 # @author Mark Jenkins <mark@markjenkins.ca>
 
-from menu import run_breakable_menu, always_return_false
+from menu import run_menu, always_return_false
 
 def run_key_gen_menu():
     pass
@@ -22,7 +22,7 @@ def run_passphrase_menu():
     pass
 
 def generate_key_menu():
-    run_breakable_menu(
+    run_menu(
         "How do you want to generate your key?\n"
         "Do you want to randomly generate a private (K)ey and print it "
         "randomly generate a (S)eed, supply a (P)assphrase, "

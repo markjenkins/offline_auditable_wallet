@@ -10,7 +10,7 @@
 # http://www.gnu.org/prep/maintain/html_node/License-Notices-for-Other-Files.html
 # @author Mark Jenkins <mark@markjenkins.ca>
 
-from menu import run_breakable_menu, always_return_false
+from menu import run_menu, always_return_false
 
 def restore_xor_scheme_key_menu():
     pass
@@ -22,7 +22,7 @@ def restore_key_from_passphrase_menu():
     pass
 
 def restore_key_menu():
-    run_breakable_menu(
+    run_menu(
         "Is your key encoded with a 2 of 3 (X)or scheme, "
         "generated from a (S)eed, "
         "derived from a (P)assphrase or "
