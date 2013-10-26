@@ -15,12 +15,15 @@ def always_return_false():
 def missing_menu_item():
     pass
 
+def do_menu_run(main_msg, prompt, options):
+     print(main_msg)
+     return options.get(
+         input("%s %s" % (prompt, PROMPT_CHARACTERS)),
+         lambda : None )()
+
 def run_menu(main_msg, prompt, options):
     while True:
-        print(main_msg)
-        return_value =  options.get(
-            input("%s %s" % (prompt, PROMPT_CHARACTERS)),
-            lambda : None )()
+        return_value = do_menu_run(main_msg, prompt, options)
         if return_value is False:
             break
     return return_value
