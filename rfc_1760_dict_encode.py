@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# Python 3 only, does not have backwards compatible support for Python 2
+
 # Copyright Mark Jenkins, 2013
 #
 # Copying and distribution of this file, with or without modification,
