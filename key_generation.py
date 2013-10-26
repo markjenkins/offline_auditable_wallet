@@ -28,7 +28,7 @@ def generate_key_menu():
         "randomly generate a (S)eed, supply a (P)assphrase, "
         "or E(xit) to the main menu?",
         "K/S/P/E",
-        { 'R': run_key_gen_menu,
+        { 'K': run_key_gen_menu,
           'S': run_seed_gen_menu,
           'P': run_passphrase_menu,
           'E': always_return_false, },
