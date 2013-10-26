@@ -1,0 +1,1 @@
+https://github.com/warner/python-ecdsa/tree/python-ecdsa-0.10
