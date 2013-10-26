@@ -23,3 +23,4 @@ def run_menu(main_msg, prompt, options):
             lambda : None )()
         if return_value is False:
             break
+    return return_value
