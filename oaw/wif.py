@@ -14,7 +14,7 @@ def private_key_to_wif(private_key_bytes, compressed_public):
 
 def show_wallet_import_format(private_key_bytes, compressed_public):
     print("Your private key is:")
-    print( private_key_to_wip(private_key_bytes, compressed_public) )
+    print( private_key_to_wif(private_key_bytes, compressed_public) )
     return False
 
 def wif_to_private_key_and_public_compressed(wif):
