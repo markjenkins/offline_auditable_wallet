@@ -1,3 +1,13 @@
+# Copyright Mark Jenkins, 2013
+#
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved. This file is offered as-is,
+# without any warranty.
+# http://www.gnu.org/prep/maintain/html_node/License-Notices-for-Other-Files.html
+# @author Mark Jenkins <mark@markjenkins.ca>
+
+
 # python imports
 from itertools import takewhile, chain
 from functools import reduce
@@ -8,6 +18,8 @@ from ecdsa.util import number_to_string
 # some algorithmic inspiration from
 # https://bitcointalk.org/index.php?topic=1026.0
 # but without explicit exponentiation, all multiplies and divides
+
+BITS_PER_BYTE = 8
 
 def int_to_minimal_bytes(number):
     return number_to_string(number, number)
@@ -26,7 +38,6 @@ if version_info[0] >= 3 and version_info[1] >= 2:
 
     # which is too bad, I really liked my implementation of bytes_to_int
     # Hopefully the underlying implementation also only does OR and shifts
-    # BITS_PER_BYTE = 8
     # def bytes_to_int(bytesies):
     # return reduce(
     #    lambda accumulation, single_byte:
@@ -40,9 +51,8 @@ else:
         # if length is None, create a number of the same order
         # if length is specified in bytes, set order to the biggest int of
         return ( int_to_minimal_bytes(number) if length == None
-                 else number_to_string(number, 2 ** (length*8) -1) )
-
-
+                 else number_to_string(number, 2
+                                       ** (length*BITS_PER_BYTE) -1) )
 
 # there has got to be something built in for this, no?
 def repeat_transform_until(transform, value, predicate):
