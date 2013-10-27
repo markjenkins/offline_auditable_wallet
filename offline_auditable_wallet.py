@@ -18,7 +18,7 @@ except ImportError:
     generate_key_menu = missing_menu_item
     
 try:
-    from key_restoration import restore_key_menu
+    from oaw.key_restoration_menu import restore_key_menu
 except ImportError:
     restore_key_menu = missing_menu_item
 
