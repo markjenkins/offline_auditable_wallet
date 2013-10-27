@@ -8,7 +8,8 @@
 # @author Mark Jenkins <mark@markjenkins.ca>
 
 from .encoding import (
-    create_reverse_dictionary, sym_decode, sym_encode_with_zero_pad,
+    create_reverse_dictionary, sym_decode_with_zero_pad,
+    sym_encode_with_zero_pad,
     )
 
 DICTIONARY = tuple(
@@ -16,7 +17,7 @@ DICTIONARY = tuple(
 REVERSE_DICTIONARY = create_reverse_dictionary(DICTIONARY)
 
 def b58decode(v, length=None):
-    return sym_decode(v, REVERSE_DICTIONARY, length)
+    return sym_decode_with_zero_pad(v, REVERSE_DICTIONARY)
 
 def b58encode(v):
     return ''.join(sym_encode_with_zero_pad(v, DICTIONARY))

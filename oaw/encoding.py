@@ -93,13 +93,30 @@ def sym_encode_with_zero_pad(bytesies, dictionary):
         sym_encode(bytesies, dictionary)
         ) # return expression
 
-def sym_decode(syms, reverse_dictionary, length):
+def sym_decode(syms, reverse_dictionary, length=None):
     num_symbols = len(reverse_dictionary)
     return int_to_bytes(
         reduce( lambda accumulation, symbol:
                        accumulation*num_symbols+reverse_dictionary[symbol],
                 syms, 0),
         length)
+
+def sym_decode_with_zero_pad(syms, reverse_dictionary):
+    # important, we don't want to involve any leading zeros twice
+    syms_buffer = tuple(syms)
+    leading_zeros = bytes(
+        0
+        for i in takewhile( lambda x: reverse_dictionary[x] == 0,
+                            syms_buffer)
+        )
+
+    # if there is more then just zeros, return the leading zeros plus everything
+    # else decoded
+    if len(leading_zeros) != len(syms_buffer):
+        return leading_zeros + sym_decode(syms_buffer, reverse_dictionary, None)
+    # else everyting was zeros
+    else:
+        return leading_zeros
 
 def create_reverse_dictionary(dictionary):
      return dict( (sym, i)

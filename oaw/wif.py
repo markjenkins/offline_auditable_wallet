@@ -21,7 +21,11 @@ def wif_to_private_key_and_public_compressed(wif):
     # we're only interested in the first 32 bytes, there might be an
     # extra one from this being a private key that co-responds to a
     # compressed public key based bitcoin address but we don't need it
-    return ASecretToSecret(wif)[:32], is_compressed(wif)    
+    #
+    # But we better not come up with less then 32 bytes!
+    secret_key_bytes = ASecretToSecret(wif)[:32]
+    assert( len(secret_key_bytes) == 32 )
+    return secret_key_bytes, is_compressed(wif)    
 
 def restore_wif_key():
     return wif_to_private_key_and_public_compressed(
