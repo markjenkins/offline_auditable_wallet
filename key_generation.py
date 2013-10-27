@@ -106,5 +106,37 @@ def generate_key_menu():
           )
         )
 
+def command_line_main():
+    from optparse import OptionParser
+    from wif import private_key_to_wif
+
+    parser = OptionParser()
+    parser.add_option(
+        "-W", "--wif",
+        dest="output_format",
+        action="store_const", const="W",
+        help="output new key in wallet import format (WIF)",
+        default='W',
+        )
+    parser.add_option(
+        "--rfc",
+        dest="output_format",
+        action="store_const",
+        const="rfc",
+        )
+
+    (options, args) = parser.parse_args()
+    signing_key = make_key_from_OS()
+    compressed_public_key = True
+
+    private_key_display = {
+        'W': lambda x: private_key_to_wif(x, compressed_public_key),
+        'rfc': lambda *a: '',
+        }
+    print( private_key_display[options.output_format](
+            signing_key.to_string() ) )
+    print( get_bitcoin_address_from_signing_key(
+            signing_key, compressed_public_key ))
+
 if __name__ == "__main__":
-    generate_key_menu()
+    command_line_main()
