@@ -33,6 +33,12 @@ def restore_key_from_seed_menu():
 def restore_key_from_passphrase_menu():
     pass
 
+def private_key_bytes_to_bitcoin_address(
+    private_key_bytes, compressed_public_key):
+    signing_key = SigningKey.from_string(private_key_bytes, SECP256k1)
+    return get_bitcoin_address_from_signing_key(
+        signing_key, compressed_public_key)
+
 def restore_key_menu():
     (private_key_bytes, compressed) = do_menu_run(
         "Is your key in (W)allet import format, "
@@ -50,11 +56,43 @@ def restore_key_menu():
          )
         )
     if isinstance(private_key_bytes, bytes):
-        signing_key = SigningKey.from_string(private_key_bytes, SECP256k1)
-        print("The bitcoin address is %s" %
-              get_bitcoin_address_from_signing_key(signing_key, compressed))
+        print(
+            "The bitcoin address is %s" %
+            private_key_bytes_to_bitcoin_address(private_key_bytes, compressed)
+            )
     else:
         print("problem with imported key")
 
+def command_line_main():
+    from optparse import OptionParser
+    from wif import \
+        (wif_to_private_key_and_public_compressed, private_key_to_wif,
+         )
+
+    parser = OptionParser()
+    parser.add_option(
+        "-W", "--wif",
+        dest="input_format",
+        action="store_const", const="W",
+        help="input new key in wallet import format (WIF)",
+        default='W',
+        )
+    parser.add_option(
+        "--rfc",
+        dest="input_format",
+        action="store_const",
+        const="rfc",
+        )
+
+    (options, args) = parser.parse_args()
+    private_key_convert = {
+        'W': wif_to_private_key_and_public_compressed,
+        'rfc': lambda *a: (b'', True),
+        }
+    private_key_bytes, compressed = \
+        private_key_convert[options.input_format](args[0])
+    print(private_key_to_wif(private_key_bytes, compressed))
+    print(private_key_bytes_to_bitcoin_address(private_key_bytes, compressed))
+
 if __name__ == "__main__":
-    restore_key_menu()
+    command_line_main()
