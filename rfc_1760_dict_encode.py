@@ -398,6 +398,28 @@ def bytes_to_words(input_bytes):
 def words_to_bytes(words):
     return numbers_to_bytes(words_to_numbers(words))
 
+def str_iter_to_upper(str_iter):
+    return ( msg.upper() for msg in str_iter )
+
+def words_iter_to_32_bytes(words):
+    return words_to_bytes( str_iter_to_upper(words) )[:32]
+
+def words_string_to_32_bytes(words_together):
+    return words_iter_to_32_bytes( words_together.split(' ') )
+
+def joined_words_for_bytes(input_bytes):
+    return " ".join(bytes_to_words(input_bytes))
+
+def show_wallet_dict_words(private_key_bytes, compressed_public_key):
+    words = tuple(bytes_to_words(private_key_bytes))
+    print( "your private key is encoded by these %s words" % len(words) )
+    print( " ".join(words) )
+
+def restore_dict_encoded_key():
+    words_together = input("input your RFC 1760 dictionary words> ")
+    return (words_string_to_32_bytes(words_together),
+            True )
+
 if __name__ == "__main__":
     from os import urandom
     number_of_bytes = 128//BITS_PER_BYTE

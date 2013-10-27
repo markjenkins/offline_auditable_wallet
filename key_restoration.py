@@ -21,8 +21,10 @@ try:
 except ImportError:
     restore_wif_key = missing_menu_item
 
-def restore_dict_encoded_key():
-    pass
+try:
+    from rfc_1760_dict_encode import restore_dict_encoded_key
+except ImportError:
+    restore_dict_encoded_key = missing_menu_item
 
 def restore_xor_scheme_key_menu():
     pass
@@ -65,9 +67,10 @@ def restore_key_menu():
 
 def command_line_main():
     from optparse import OptionParser
-    from wif import \
-        (wif_to_private_key_and_public_compressed, private_key_to_wif,
-         )
+    from wif import (
+        wif_to_private_key_and_public_compressed, private_key_to_wif,
+        )
+    from rfc_1760_dict_encode import words_iter_to_32_bytes
 
     parser = OptionParser()
     parser.add_option(
@@ -86,11 +89,12 @@ def command_line_main():
 
     (options, args) = parser.parse_args()
     private_key_convert = {
-        'W': wif_to_private_key_and_public_compressed,
-        'rfc': lambda *a: (b'', True),
+        'W': lambda a: wif_to_private_key_and_public_compressed(a[0]),
+        'rfc': lambda a: (words_iter_to_32_bytes(a), True),
         }
+
     private_key_bytes, compressed = \
-        private_key_convert[options.input_format](args[0])
+        private_key_convert[options.input_format](args)
     print(private_key_to_wif(private_key_bytes, compressed))
     print(private_key_bytes_to_bitcoin_address(private_key_bytes, compressed))
 

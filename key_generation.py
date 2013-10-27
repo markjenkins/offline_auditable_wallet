@@ -21,6 +21,11 @@ try:
 except ImportError:
     show_wallet_import_format = missing_menu_item
 
+try:
+    from rfc_1760_dict_encode import show_wallet_dict_words
+except ImportError:
+    show_wallet_dict_words = missing_menu_item
+
 def make_key_from_OS():
     return SigningKey.generate(SECP256k1) 
 
@@ -33,9 +38,6 @@ def make_key_from_dice_rolls():
 def make_key_from_hex_string():
     # should use SingingKey.generate with this hex initial entropy
     # and os.urandom the rest
-    pass
-
-def show_wallet_dict_words(private_key_bytes):
     pass
 
 def show_wallet_xor_scheme(private_key_bytes):
@@ -109,6 +111,7 @@ def generate_key_menu():
 def command_line_main():
     from optparse import OptionParser
     from wif import private_key_to_wif
+    from rfc_1760_dict_encode import joined_words_for_bytes
 
     parser = OptionParser()
     parser.add_option(
@@ -131,7 +134,7 @@ def command_line_main():
 
     private_key_display = {
         'W': lambda x: private_key_to_wif(x, compressed_public_key),
-        'rfc': lambda *a: '',
+        'rfc': joined_words_for_bytes,
         }
     print( private_key_display[options.output_format](
             signing_key.to_string() ) )
