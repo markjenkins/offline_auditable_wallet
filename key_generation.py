@@ -66,6 +66,7 @@ def display_private_key_menu(signing_key):
     bitcoin_address = get_bitcoin_address_from_signing_key(signing_key,
                                                            compressed)
     print("Your public bitcoin address is %s" % bitcoin_address)
+    print()
     
 def run_key_gen_menu():
     private_key = do_menu_run(
