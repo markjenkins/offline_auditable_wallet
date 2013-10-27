@@ -7,7 +7,7 @@
 # http://www.gnu.org/prep/maintain/html_node/License-Notices-for-Other-Files.html
 # @author Mark Jenkins <mark@markjenkins.ca>
 
-from pywallet_abridged import \
+from .pywallet_abridged import \
     (GetPubKey, public_key_to_bc_address,
      )
 

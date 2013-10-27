@@ -7,7 +7,7 @@
 # http://www.gnu.org/prep/maintain/html_node/License-Notices-for-Other-Files.html
 # @author Mark Jenkins <mark@markjenkins.ca>
 
-from pywallet_abridged import SecretToASecret, ASecretToSecret, is_compressed
+from .pywallet_abridged import SecretToASecret, ASecretToSecret, is_compressed
 
 def private_key_to_wif(private_key_bytes, compressed_public):
     return SecretToASecret( private_key_bytes, compressed_public)

@@ -10,7 +10,7 @@
 # http://www.gnu.org/prep/maintain/html_node/License-Notices-for-Other-Files.html
 # @author Mark Jenkins <mark@markjenkins.ca>
 
-from menu import run_menu, always_return_false, missing_menu_item
+from oaw.menu import run_menu, always_return_false, missing_menu_item
 
 try:
     from key_generation import generate_key_menu

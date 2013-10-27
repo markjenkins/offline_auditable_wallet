@@ -13,16 +13,17 @@
 from ecdsa.curves import SECP256k1
 from ecdsa.keys import SigningKey
 
-from menu import run_menu, do_menu_run, always_return_false, missing_menu_item
-from bitcoin_address import get_bitcoin_address_from_signing_key
+from oaw.menu import (
+    run_menu, do_menu_run, always_return_false, missing_menu_item)
+from oaw.bitcoin_address import get_bitcoin_address_from_signing_key
 
 try:
-    from wif import show_wallet_import_format
+    from oaw.wif import show_wallet_import_format
 except ImportError:
     show_wallet_import_format = missing_menu_item
 
 try:
-    from rfc_1760_dict_encode import show_wallet_dict_words
+    from oaw.rfc_1760_dict_encode import show_wallet_dict_words
 except ImportError:
     show_wallet_dict_words = missing_menu_item
 
@@ -110,8 +111,8 @@ def generate_key_menu():
 
 def command_line_main():
     from optparse import OptionParser
-    from wif import private_key_to_wif
-    from rfc_1760_dict_encode import joined_words_for_bytes
+    from oaw.wif import private_key_to_wif
+    from oaw.rfc_1760_dict_encode import joined_words_for_bytes
 
     parser = OptionParser()
     parser.add_option(

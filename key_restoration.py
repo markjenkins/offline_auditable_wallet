@@ -13,16 +13,16 @@
 from ecdsa.keys import SigningKey
 from ecdsa.curves import SECP256k1
 
-from menu import do_menu_run, always_return_false
-from bitcoin_address import get_bitcoin_address_from_signing_key
+from oaw.menu import do_menu_run, always_return_false
+from oaw.bitcoin_address import get_bitcoin_address_from_signing_key
 
 try:
-    from wif import restore_wif_key
+    from oaw.wif import restore_wif_key
 except ImportError:
     restore_wif_key = missing_menu_item
 
 try:
-    from rfc_1760_dict_encode import restore_dict_encoded_key
+    from oaw.rfc_1760_dict_encode import restore_dict_encoded_key
 except ImportError:
     restore_dict_encoded_key = missing_menu_item
 
@@ -67,10 +67,10 @@ def restore_key_menu():
 
 def command_line_main():
     from optparse import OptionParser
-    from wif import (
+    from oaw.wif import (
         wif_to_private_key_and_public_compressed, private_key_to_wif,
         )
-    from rfc_1760_dict_encode import words_iter_to_32_bytes
+    from oaw.rfc_1760_dict_encode import words_iter_to_32_bytes
 
     parser = OptionParser()
     parser.add_option(
