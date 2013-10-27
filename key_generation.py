@@ -10,11 +10,10 @@
 # http://www.gnu.org/prep/maintain/html_node/License-Notices-for-Other-Files.html
 # @author Mark Jenkins <mark@markjenkins.ca>
 
-from menu import run_menu, do_menu_run, always_return_false, missing_menu_item
-
 from ecdsa.curves import SECP256k1
 from ecdsa.keys import SigningKey
 
+from menu import run_menu, do_menu_run, always_return_false, missing_menu_item
 from bitcoin_address import get_bitcoin_address_from_signing_key
 
 try:
