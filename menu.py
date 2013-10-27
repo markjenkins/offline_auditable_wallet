@@ -19,9 +19,12 @@ def do_menu_run(main_msg, options, *args, **kargs):
     prompt = "/".join(opt[0] for opt in options)
     options = dict(options)
     print(main_msg)
-    return options.get(
-        input("%s %s" % (prompt, PROMPT_CHARACTERS)),
+    prompt_response = input("%s %s" % (prompt, PROMPT_CHARACTERS))
+    print()
+    call_return_value = options.get(
+        prompt_response,
         lambda : None )(*args, **kargs)
+    return call_return_value
 
 def run_menu(main_msg, options, *args, **kargs):
     while True:
