@@ -29,9 +29,6 @@ def make_key_from_dice_rolls():
     # should use SingingKey.generate with dice rolls providing initial entropy
     # and os.urandom the rest
     #
-    # we'll do funky stuff like SigningKey.from_secret_exponent(
-    #   randrange_from_seed__trytryagain )
-    # 
     pass
 
 def make_key_from_hex_string():
@@ -89,6 +86,9 @@ def run_key_gen_menu():
         display_private_key_menu(private_key)
 
 def run_seed_gen_menu():
+    # we'll do funky stuff like SigningKey.from_secret_exponent(
+    #   randrange_from_seed__trytryagain )
+    # 
     pass
 
 def run_passphrase_menu():
