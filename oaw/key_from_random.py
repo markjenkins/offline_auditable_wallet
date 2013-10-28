@@ -32,9 +32,33 @@ def gen_composite_entropy_func(*args):
         # I have no reason to believe this makes anything weaker
         # now you won't see common prefixes in final private key when
         # using the dice and hex options
-        return sha256(
-            b''.join(pump_out_bytes(args,  bytes_required)) ).digest()
+        #
+        # this by the way only makes sense when bytes_required is 32
+        assert( bytes_required == 32 )
+        return b''.join(pump_out_bytes(args,  bytes_required))
     return composed_entropy_func
+
+def get_hashed_composite_entropy_func(*args):
+    composite_entropy_func = gen_composite_entropy_func(*args)
+    def hashed_composed_entropy_func(bytes_required):
+        # we run the results through sha256 in case there is a little
+        # bias in one of these entropy sources
+        #
+        # I have no reason to believe this makes anything weaker,
+        # this is what a cryptographically secure hash should be good for, 
+        # but I would suggest other auditors look at this closely
+        #
+        # From my perspective now you won't see common prefixes in final
+        # private key when using the dice and hex options the same over and 
+        # over
+        #
+        # This by the way only makes sense when bytes_required is 32
+        if bytes_required != 32:
+            raise Exception(
+                "get_hashed_composite_entropy_func used in a situation that "
+                "where it wasn't asked to provide 32 bytes")
+        return sha256( composite_entropy_func(bytes_required) ).digest()
+    return hashed_composed_entropy_func
 
 def make_key_from_entropy_source(entropy=None):
     return SigningKey.generate(SECP256k1, entropy=entropy) 
@@ -43,7 +67,7 @@ make_key_from_OS = make_key_from_entropy_source
 
 def make_key_building_from_existing_bytes_plus_urandom(existing_bytes):
     return make_key_from_entropy_source(
-        gen_composite_entropy_func(
+        get_hashed_composite_entropy_func(
             lambda x: existing_bytes,
             urandom )
         )
