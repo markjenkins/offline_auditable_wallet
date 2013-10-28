@@ -7,7 +7,7 @@
 # http://www.gnu.org/prep/maintain/html_node/License-Notices-for-Other-Files.html
 # @author Mark Jenkins <mark@markjenkins.ca>
 
-from .menu import do_menu_run, always_return_false
+from .menu import do_menu_run, always_return_false, missing_menu_item
 from .bitcoin_address import private_key_bytes_to_bitcoin_address
 
 try:
@@ -20,8 +20,10 @@ try:
 except ImportError:
     restore_dict_encoded_key = missing_menu_item
 
-def restore_xor_scheme_key_menu():
-    pass
+try:
+    from .xor import restore_xor_scheme_menu
+except ImportError:
+    restore_xor_scheme_menu = missing_menu_item
 
 def restore_key_from_seed_menu():
     pass

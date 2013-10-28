@@ -67,6 +67,3 @@ def make_key_building_from_existing_bytes_plus_urandom(existing_bytes):
             lambda x: existing_bytes,
             urandom )
         )
-
-def show_wallet_xor_scheme(private_key_bytes):
-    pass

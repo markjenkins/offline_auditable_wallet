@@ -14,7 +14,6 @@ from .menu import (
 
 from .key_from_random import (
     make_key_from_OS,
-    show_wallet_xor_scheme,
     )
 from .bitcoin_address import get_bitcoin_address_from_signing_key
 
@@ -27,6 +26,11 @@ try:
     from .rfc_1760_dict_encode import show_wallet_dict_words
 except ImportError:
     show_wallet_dict_words = missing_menu_item
+
+try:
+    from .xor import show_wallet_xor_scheme
+except ImportError:
+    show_wallet_xor_scheme = missing_menu_item
 
 try:
     from .hex import make_key_from_hex_prompt
