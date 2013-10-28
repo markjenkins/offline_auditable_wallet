@@ -15,7 +15,6 @@ from .menu import (
 from .key_from_random import (
     make_key_from_OS,
     make_key_from_dice_rolls_prompt,
-    make_key_from_hex_string,
     show_wallet_xor_scheme,
     )
 from .bitcoin_address import get_bitcoin_address_from_signing_key
@@ -29,6 +28,11 @@ try:
     from .rfc_1760_dict_encode import show_wallet_dict_words
 except ImportError:
     show_wallet_dict_words = missing_menu_item
+
+#try:
+from .hex import make_key_from_hex_prompt
+#except ImportError:
+#    make_key_from_hex_prompt = make_key_from_OS
 
 def display_private_key_menu(signing_key):
     # always generate bitcon addresses based on the compressed public key
@@ -66,7 +70,7 @@ def run_key_gen_menu():
         "You can also (E)xit.",
         ( ('R', make_key_from_OS),
           ('D', make_key_from_dice_rolls_prompt),
-          ('H', make_key_from_hex_string),
+          ('H', make_key_from_hex_prompt),
           ('E', always_return_false),
           )
         )

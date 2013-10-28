@@ -15,7 +15,10 @@ from optparse import OptionParser
 from oaw.bitcoin_address import get_bitcoin_address_from_signing_key
 from oaw.wif import private_key_to_wif
 from oaw.rfc_1760_dict_encode import joined_words_for_bytes
-from oaw.key_from_random import make_key_from_OS, make_key_from_dice_rolls_provided
+from oaw.key_from_random import (
+    make_key_from_OS, make_key_from_dice_rolls_provided,
+    )
+from oaw.hex import make_key_from_hex_strings
 
 def command_line_main():
     parser = OptionParser()
@@ -27,22 +30,27 @@ def command_line_main():
         default='W',
         )
     parser.add_option(
-        "-D", "--rfc",
+        "--rfc",
         dest="output_format",
         action="store_const",
         const="rfc",
         )
     parser.add_option(
-        "--dice",
+        "-D", "--dice",
         dest="random_source",
         action="store_const", const="D",
         default="OS",
         )
+    parser.add_option(
+        "-H", "--hex",
+        dest="random_source",
+        action="store_const", const="H", )
 
     (options, args) = parser.parse_args()
 
     signing_key = { 'OS': lambda x: make_key_from_OS,
                     'D': make_key_from_dice_rolls_provided,
+                    'H': make_key_from_hex_strings,
                     }[options.random_source](args)
     compressed_public_key = True
 

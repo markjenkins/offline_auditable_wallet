@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python3
 # Python 3 only, does not have backwards compatible support for Python 2
 
@@ -58,11 +59,6 @@ def make_key_from_dice_rolls_prompt():
         gen_composite_entropy_function_ending_with_urandom(
                 lambda x: return_byte_decoded_dice_from_prompt() )
         )
-
-def make_key_from_hex_string():
-    # should use SingingKey.generate with this hex initial entropy
-    # and os.urandom the rest
-    pass
 
 def show_wallet_xor_scheme(private_key_bytes):
     pass
