@@ -19,7 +19,7 @@ REVERSE_DICTIONARY = create_reverse_dictionary(DICTIONARY)
 
 def dice_decode(v):
     dice_buffer = tuple(v)
-    length = int( (log(6, 2) * len(dice_buffer)) // 8 )+1
+    length = int( (log(6, 2) * len(dice_buffer)) // 8 )
     return sym_decode(dice_buffer, REVERSE_DICTIONARY, length)
 
 def break_up_dice_input_string(input_string):
