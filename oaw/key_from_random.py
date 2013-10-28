@@ -12,6 +12,7 @@
 # @author Mark Jenkins <mark@markjenkins.ca>
 
 from os import urandom
+from hashlib import sha256
 
 from ecdsa.curves import SECP256k1
 from ecdsa.keys import SigningKey
@@ -26,7 +27,13 @@ def gen_composite_entropy_func(*args):
             if byte_count <= 0:
                 break
     def composed_entropy_func(bytes_required):
-        return b''.join(pump_out_bytes(args,  bytes_required))
+        # we run the results through sha256 in case there is a little
+        # bias in one of these entropy sources
+        # I have no reason to believe this makes anything weaker
+        # now you won't see common prefixes in final private key when
+        # using the dice and hex options
+        return sha256(
+            b''.join(pump_out_bytes(args,  bytes_required)) ).digest()
     return composed_entropy_func
 
 def make_key_from_entropy_source(entropy=None):
