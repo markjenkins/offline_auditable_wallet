@@ -17,16 +17,6 @@ from ecdsa.curves import SECP256k1
 from ecdsa.keys import SigningKey
 from ecdsa.util import randrange
 
-def return_empty_tuple(*args, **kargs):
-    return ()
-
-try:
-    from .dice import return_byte_decoded_dice_from_prompt
-    from .dice import dice_decode
-except ImportError:
-    return_byte_decoded_dice_from_prompt = return_empty_tuple
-    dice_decode = return_empty_tuple
-
 def gen_composite_entropy_func(*args):
     def pump_out_bytes(sources, byte_count):
         for source in sources:
@@ -50,14 +40,6 @@ def make_key_building_from_existing_bytes_plus_urandom(existing_bytes):
             lambda x: existing_bytes,
             urandom )
         )
-
-def make_key_from_dice_rolls_provided(dice_rolls):
-    return make_key_building_from_existing_bytes_plus_urandom(
-        dice_decode(dice_rolls) )
-
-def make_key_from_dice_rolls_prompt():
-    return make_key_building_from_existing_bytes_plus_urandom(
-        return_byte_decoded_dice_from_prompt() )
 
 def show_wallet_xor_scheme(private_key_bytes):
     pass

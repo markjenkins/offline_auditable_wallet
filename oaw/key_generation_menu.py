@@ -14,7 +14,6 @@ from .menu import (
 
 from .key_from_random import (
     make_key_from_OS,
-    make_key_from_dice_rolls_prompt,
     show_wallet_xor_scheme,
     )
 from .bitcoin_address import get_bitcoin_address_from_signing_key
@@ -33,6 +32,11 @@ except ImportError:
 from .hex import make_key_from_hex_prompt
 #except ImportError:
 #    make_key_from_hex_prompt = make_key_from_OS
+
+try:
+    from .dice import make_key_from_dice_rolls_prompt
+except:
+    make_key_from_dice_rolls_prompt = make_key_from_OS
 
 def display_private_key_menu(signing_key):
     # always generate bitcon addresses based on the compressed public key

@@ -16,9 +16,10 @@ from oaw.bitcoin_address import get_bitcoin_address_from_signing_key
 from oaw.wif import private_key_to_wif
 from oaw.rfc_1760_dict_encode import joined_words_for_bytes
 from oaw.key_from_random import (
-    make_key_from_OS, make_key_from_dice_rolls_provided,
+    make_key_from_OS,
     )
 from oaw.hex import make_key_from_hex_strings
+from oaw.dice import make_key_from_dice_rolls_provided
 
 def command_line_main():
     parser = OptionParser()

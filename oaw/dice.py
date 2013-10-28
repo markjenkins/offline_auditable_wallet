@@ -12,6 +12,7 @@ from math import log
 from .encoding import (
     create_reverse_dictionary, sym_decode
     )
+from .key_from_random import make_key_building_from_existing_bytes_plus_urandom
 
 DICTIONARY = tuple( str(i) for i in range(1, 6+1) )
 REVERSE_DICTIONARY = create_reverse_dictionary(DICTIONARY)
@@ -35,6 +36,11 @@ def return_byte_decoded_dice_from_prompt():
            (len(return_bytes)*8, len(return_bytes) ) )
     print()
     return return_bytes
-           
-    
-    
+
+def make_key_from_dice_rolls_provided(dice_rolls):
+    return make_key_building_from_existing_bytes_plus_urandom(
+        dice_decode(dice_rolls) )
+
+def make_key_from_dice_rolls_prompt():
+    return make_key_building_from_existing_bytes_plus_urandom(
+        return_byte_decoded_dice_from_prompt() )
