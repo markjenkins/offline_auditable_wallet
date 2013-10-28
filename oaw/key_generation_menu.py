@@ -14,7 +14,7 @@ from .menu import (
 
 from .key_from_random import (
     make_key_from_OS,
-    make_key_from_dice_rolls,
+    make_key_from_dice_rolls_prompt,
     make_key_from_hex_string,
     show_wallet_xor_scheme,
     )
@@ -65,7 +65,7 @@ def run_key_gen_menu():
         "trust in (H)ex? "
         "You can also (E)xit.",
         ( ('R', make_key_from_OS),
-          ('D', make_key_from_dice_rolls),
+          ('D', make_key_from_dice_rolls_prompt),
           ('H', make_key_from_hex_string),
           ('E', always_return_false),
           )

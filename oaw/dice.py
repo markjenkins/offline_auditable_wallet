@@ -20,3 +20,21 @@ def dice_decode(v):
     dice_buffer = tuple(v)
     length = int( (log(6, 2) * len(dice_buffer)) // 8 )+1
     return sym_decode(dice_buffer, REVERSE_DICTIONARY, length)
+
+def break_up_dice_input_string(input_string):
+    # assumption for anyone modding this from the original six sided dice
+    # code, each dice roll is one digit
+    return (character for character in input_string
+            if character in DICTIONARY )
+
+def return_byte_decoded_dice_from_prompt():
+    return_bytes = dice_decode(break_up_dice_input_string(
+            input("input your dice rolls\n"
+                  "(2.5 bits of entropy each)> ") ) )
+    print( "thanks, got %s bits (%s bytes) out of that " %
+           (len(return_bytes)*8, len(return_bytes) ) )
+    print()
+    return return_bytes
+           
+    
+    
