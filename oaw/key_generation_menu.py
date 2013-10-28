@@ -28,10 +28,10 @@ try:
 except ImportError:
     show_wallet_dict_words = missing_menu_item
 
-#try:
-from .hex import make_key_from_hex_prompt
-#except ImportError:
-#    make_key_from_hex_prompt = make_key_from_OS
+try:
+    from .hex import make_key_from_hex_prompt
+except ImportError:
+    make_key_from_hex_prompt = make_key_from_OS
 
 try:
     from .dice import make_key_from_dice_rolls_prompt
