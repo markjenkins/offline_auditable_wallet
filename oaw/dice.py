@@ -17,9 +17,9 @@ from .key_from_random import make_key_building_from_existing_bytes_plus_urandom
 DICTIONARY = tuple( str(i) for i in range(1, 6+1) )
 REVERSE_DICTIONARY = create_reverse_dictionary(DICTIONARY)
 
-def dice_decode(v):
+def dice_decode(v, length=None):
     dice_buffer = tuple(v)
-    return sym_decode(dice_buffer, REVERSE_DICTIONARY)
+    return sym_decode(dice_buffer, REVERSE_DICTIONARY, length)
 
 def break_up_dice_input_string(input_string):
     # assumption for anyone modding this from the original six sided dice
@@ -27,10 +27,17 @@ def break_up_dice_input_string(input_string):
     return (character for character in input_string
             if character in DICTIONARY )
 
+def get_safe_number_of_bytes_from_dice_rolls(dice_rolls):
+    dice_buffer = tuple(dice_rolls)
+    length = int( (log(len(DICTIONARY), 2) * len(dice_buffer)) // 8 )    
+    return dice_decode(dice_buffer, length+1)[:length]
+
 def return_byte_decoded_dice_from_prompt():
-    return_bytes = dice_decode(break_up_dice_input_string(
+    return_bytes = get_safe_number_of_bytes_from_dice_rolls(
+        break_up_dice_input_string(
             input("input your dice rolls\n"
-                  "(2.5 bits of entropy each)> ") ) )
+                 "(2.5 bits of entropy each)> ") )
+        )
     print( "thanks, got %s bits (%s bytes) out of that " %
            (len(return_bytes)*8, len(return_bytes) ) )
     print()
@@ -38,7 +45,7 @@ def return_byte_decoded_dice_from_prompt():
 
 def make_key_from_dice_rolls_provided(dice_rolls):
     return make_key_building_from_existing_bytes_plus_urandom(
-        dice_decode(dice_rolls) )
+        get_safe_number_of_bytes_from_dice_rolls(dice_rolls) )
 
 def make_key_from_dice_rolls_prompt():
     return make_key_building_from_existing_bytes_plus_urandom(
