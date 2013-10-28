@@ -10,16 +10,11 @@
 from binascii import unhexlify
 from string import hexdigits
 
-from .key_from_random import (
-    make_key_from_entropy_source,
-    gen_composite_entropy_function_ending_with_urandom,
-    )
+from .key_from_random import make_key_building_from_existing_bytes_plus_urandom
 
 def make_key_from_hex_strings(hex_strings):
-    return make_key_from_entropy_source(
-        gen_composite_entropy_function_ending_with_urandom(
-                lambda x: unhexlify( bytes(''.join(hex_strings), 'ascii') )
-                )
+    return make_key_building_from_existing_bytes_plus_urandom(
+        unhexlify( bytes(''.join(hex_strings), 'ascii') )
         )
 
 def make_key_from_hex_prompt():

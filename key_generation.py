@@ -48,7 +48,7 @@ def command_line_main():
 
     (options, args) = parser.parse_args()
 
-    signing_key = { 'OS': lambda x: make_key_from_OS,
+    signing_key = { 'OS': lambda x: make_key_from_OS(),
                     'D': make_key_from_dice_rolls_provided,
                     'H': make_key_from_hex_strings,
                     }[options.random_source](args)

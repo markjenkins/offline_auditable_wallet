@@ -27,7 +27,7 @@ except ImportError:
     return_byte_decoded_dice_from_prompt = return_empty_tuple
     dice_decode = return_empty_tuple
 
-def make_composite_entropy(bytes_required, *args):
+def gen_composite_entropy_func(*args):
     def pump_out_bytes(sources, byte_count):
         for source in sources:
             out_bytes = source(byte_count)
@@ -35,30 +35,29 @@ def make_composite_entropy(bytes_required, *args):
             byte_count -= len(out_bytes)
             if byte_count <= 0:
                 break
-    return b''.join(pump_out_bytes(args,  bytes_required))
-
-def gen_composite_entropy_function_ending_with_urandom(*args):
-    full_args = args + (urandom,)
-    def return_composite_entropy_func(bytes_required):
-        return make_composite_entropy(bytes_required, *full_args)
-    return return_composite_entropy_func
+    def composed_entropy_func(bytes_required):
+        return b''.join(pump_out_bytes(args,  bytes_required))
+    return composed_entropy_func
 
 def make_key_from_entropy_source(entropy=None):
     return SigningKey.generate(SECP256k1, entropy=entropy) 
 
 make_key_from_OS = make_key_from_entropy_source
 
-def make_key_from_dice_rolls_provided(dice_rolls):
+def make_key_building_from_existing_bytes_plus_urandom(existing_bytes):
     return make_key_from_entropy_source(
-        gen_composite_entropy_function_ending_with_urandom(
-                lambda x: dice_decode(dice_rolls) )
+        gen_composite_entropy_func(
+            lambda x: existing_bytes,
+            urandom )
         )
 
+def make_key_from_dice_rolls_provided(dice_rolls):
+    return make_key_building_from_existing_bytes_plus_urandom(
+        dice_decode(dice_rolls) )
+
 def make_key_from_dice_rolls_prompt():
-    return make_key_from_entropy_source(
-        gen_composite_entropy_function_ending_with_urandom(
-                lambda x: return_byte_decoded_dice_from_prompt() )
-        )
+    return make_key_building_from_existing_bytes_plus_urandom(
+        return_byte_decoded_dice_from_prompt() )
 
 def show_wallet_xor_scheme(private_key_bytes):
     pass
