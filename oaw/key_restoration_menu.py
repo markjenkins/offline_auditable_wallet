@@ -41,7 +41,7 @@ def restore_key_menu():
         "(E)xit to the main menu?",
         ( ('W', restore_wif_key),
           ('D', restore_dict_encoded_key),
-          ('X', restore_xor_scheme_key_menu),
+          ('X', restore_xor_scheme_menu),
           ('S', restore_key_from_seed_menu),
           ('P', restore_key_from_passphrase_menu),
           ('E', always_return_false),
