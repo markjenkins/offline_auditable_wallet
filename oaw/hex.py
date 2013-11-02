@@ -10,14 +10,20 @@
 from binascii import unhexlify
 from string import hexdigits
 
-from .key_from_random import make_key_building_from_existing_bytes_plus_urandom
+from .key_from_random import (
+    make_entropy_source_from_existing_bytes_plus_urandom,
+    make_key_building_from_existing_bytes_plus_urandom,
+    )
+
+def bytes_from_hex_strings(hex_strings):
+    return unhexlify( bytes(''.join(hex_strings), 'ascii') )
 
 def make_key_from_hex_strings(hex_strings):
     return make_key_building_from_existing_bytes_plus_urandom(
-        unhexlify( bytes(''.join(hex_strings), 'ascii') )
+        bytes_from_hex_strings(hex_strings)
         )
 
-def make_key_from_hex_prompt():
+def make_entropy_source_from_hex_prompt():
     hex_line = ''.join(
         character
         for character in input(
@@ -28,4 +34,5 @@ def make_key_from_hex_prompt():
     print("thanks, got %i bytes (%i bits) out of that" % (
             len(hex_line) // 2, len(hex_line) * 8 // 2) )
     print()
-    return make_key_from_hex_strings( (hex_line,) )
+    return make_entropy_source_from_existing_bytes_plus_urandom(
+        bytes_from_hex_strings( (hex_line,) ) )

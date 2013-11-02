@@ -13,7 +13,7 @@ from .menu import (
     run_menu, do_menu_run, always_return_false, missing_menu_item)
 
 from .key_from_random import (
-    make_key_from_OS,
+    make_key_from_entropy_source,
     )
 from .bitcoin_address import get_bitcoin_address_from_signing_key
 
@@ -32,15 +32,17 @@ try:
 except ImportError:
     show_wallet_xor_scheme = missing_menu_item
 
-try:
-    from .hex import make_key_from_hex_prompt
-except ImportError:
-    make_key_from_hex_prompt = make_key_from_OS
+def return_none(*args, **kargs): pass
 
 try:
-    from .dice import make_key_from_dice_rolls_prompt
+    from .hex import make_entropy_source_from_hex_prompt
+except ImportError:
+    make_entropy_source_from_hex_prompt = return_none
+
+try:
+    from .dice import make_entropy_source_from_dice_rolls_prompt
 except:
-    make_key_from_dice_rolls_prompt = make_key_from_OS
+    make_entropy_source_from_dice_rolls_prompt = return_none
 
 def display_private_key_menu(signing_key):
     # always generate bitcon addresses based on the compressed public key
@@ -64,9 +66,12 @@ def display_private_key_menu(signing_key):
                                                            compressed)
     print("Your public bitcoin address is %s" % bitcoin_address)
     print()
-    
-def run_key_gen_menu():
-    private_key = do_menu_run(
+
+#make_key_from_entropy_source,
+
+
+def get_entropy_source_menu():
+    return do_menu_run(
         "We need some random data for this.\n"
         "Do you fully trust the crypto grade (R)andom number generator from "
         "your operating system? (/dev/urandom on Unix-like systems, "
@@ -76,12 +81,15 @@ def run_key_gen_menu():
         "provide bytes from whatever other random source you "
         "trust in (H)ex? "
         "You can also (E)xit.",
-        ( ('R', make_key_from_OS),
-          ('D', make_key_from_dice_rolls_prompt),
-          ('H', make_key_from_hex_prompt),
+        ( ('R', return_none),
+          ('D', make_entropy_source_from_dice_rolls_prompt),
+          ('H', make_entropy_source_from_hex_prompt),
           ('E', always_return_false),
           )
         )
+   
+def run_key_gen_menu():
+    private_key = make_key_from_entropy_source(get_entropy_source_menu())
     if isinstance(private_key, SigningKey):
         display_private_key_menu(private_key)
 

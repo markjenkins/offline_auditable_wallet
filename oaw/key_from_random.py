@@ -61,9 +61,11 @@ def make_key_from_entropy_source(entropy=None):
 
 make_key_from_OS = make_key_from_entropy_source
 
-def make_key_building_from_existing_bytes_plus_urandom(existing_bytes):
-    return make_key_from_entropy_source(
-        get_hashed_composite_entropy_func(
+def make_entropy_source_from_existing_bytes_plus_urandom(existing_bytes):
+    return get_hashed_composite_entropy_func(
             lambda x: existing_bytes,
             urandom )
-        )
+
+def make_key_building_from_existing_bytes_plus_urandom(existing_bytes):
+    return make_key_from_entropy_source(
+        make_entropy_source_from_existing_bytes_plus_urandom(existing_bytes) )
