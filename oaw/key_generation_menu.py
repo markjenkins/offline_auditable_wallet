@@ -58,7 +58,10 @@ def display_private_key_menu(signing_key):
     print()
 
 def run_key_gen_menu():
-    private_key = make_key_from_entropy_source(get_entropy_source_menu())
+    entropy_source = get_entropy_source_menu()
+    if entropy_source is False:
+        return False
+    private_key = make_key_from_entropy_source(entropy_source)
     if isinstance(private_key, SigningKey):
         display_private_key_menu(private_key)
 
