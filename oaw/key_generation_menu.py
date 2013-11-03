@@ -32,17 +32,7 @@ try:
 except ImportError:
     show_wallet_xor_scheme = missing_menu_item
 
-def return_none(*args, **kargs): pass
-
-try:
-    from .hex import make_entropy_source_from_hex_prompt
-except ImportError:
-    make_entropy_source_from_hex_prompt = return_none
-
-try:
-    from .dice import make_entropy_source_from_dice_rolls_prompt
-except:
-    make_entropy_source_from_dice_rolls_prompt = return_none
+from .entropy import get_entropy_source_menu
 
 def display_private_key_menu(signing_key):
     # always generate bitcon addresses based on the compressed public key
@@ -67,24 +57,6 @@ def display_private_key_menu(signing_key):
     print("Your public bitcoin address is %s" % bitcoin_address)
     print()
 
-def get_entropy_source_menu():
-    return do_menu_run(
-        "We need some random data for this.\n"
-        "Do you fully trust the crypto grade (R)andom number generator from "
-        "your operating system? (/dev/urandom on Unix-like systems, "
-        "CryptGenRandom() on Windows)\n"
-        "Or, would you like to supplement it with some entropy of your own "
-        "by rolling some six sided (D)ice or "
-        "provide bytes from whatever other random source you "
-        "trust in (H)ex? "
-        "You can also (E)xit.",
-        ( ('R', return_none),
-          ('D', make_entropy_source_from_dice_rolls_prompt),
-          ('H', make_entropy_source_from_hex_prompt),
-          ('E', always_return_false),
-          )
-        )
-   
 def run_key_gen_menu():
     private_key = make_key_from_entropy_source(get_entropy_source_menu())
     if isinstance(private_key, SigningKey):
