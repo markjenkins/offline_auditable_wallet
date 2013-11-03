@@ -67,9 +67,6 @@ def display_private_key_menu(signing_key):
     print("Your public bitcoin address is %s" % bitcoin_address)
     print()
 
-#make_key_from_entropy_source,
-
-
 def get_entropy_source_menu():
     return do_menu_run(
         "We need some random data for this.\n"
