@@ -111,6 +111,12 @@ def show_wallet_xor_scheme(private_key_bytes, compressed):
     stripes = create_2_of_3_xor_stripes(
         (private_key_bytes, random_bytes, rand_xor) )
 
+    # important to buffer this so we can iterate through it again
+    # down below
+    stripes = tuple(stripes)
+    for stripe in stripes:
+        assert( len(stripe) == len(private_key_bytes) )
+
     display_xor_components( joined_words_for_bytes(b)
                             for b in stripes )
 
