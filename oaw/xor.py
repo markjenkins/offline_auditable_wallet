@@ -11,7 +11,61 @@ import os
 from os import urandom
 
 from .entropy import get_entropy_source_menu
-from .rfc_1760_dict_encode import joined_words_for_bytes
+from .rfc_1760_dict_encode import (
+    joined_words_for_bytes, words_string_to_32_bytes,
+    )
+
+NUM_PARTS = 3
+
+def part_joiner(parts):
+   return (
+        b''.join(row)
+        for row in parts )  
+
+def xor_rfc1760_to_private_key(args):
+    # only support breaking into three parts for now..
+    if len(args) != NUM_PARTS:
+        raise Exception(
+            "You must provide three parts, one can be blank")
+
+    # convert each of the inputs to 32 bytes, for a blank input,
+    # use all zeros
+    parts = tuple(words_string_to_32_bytes(a) if a != ''
+                  else None
+                  for a in args )
+    # replace the part that is None with a xor of the other two
+    parts = tuple(
+        xor_bytes(parts[(i+1)%NUM_PARTS], parts[(i-1)%NUM_PARTS])
+        if part == None else part
+        for i, part in enumerate(parts)
+        )    
+
+    restored_sub_parts = tuple(
+        tuple(break_into_n(b, NUM_PARTS))
+        for b in parts
+        )
+    # we really only need to restore part one...
+    restored_parts = tuple(part_joiner( (
+                (restored_sub_parts[0][0],
+                 restored_sub_parts[1][1],
+                 restored_sub_parts[2][2],
+                 ),
+                (restored_sub_parts[1][0],
+                 restored_sub_parts[2][1],
+                 restored_sub_parts[0][2],
+                 ),
+                (restored_sub_parts[2][0],
+                 restored_sub_parts[0][1],
+                 restored_sub_parts[1][2],
+                 ),
+                ) ) )
+    # but we do get to do this sanity check
+    for i in range(NUM_PARTS):
+        assert(restored_parts[i] ==
+               xor_bytes(restored_parts[(i+1)%NUM_PARTS],
+                         restored_parts[(i-1)%NUM_PARTS] ) )
+
+    return restored_parts[0], True
 
 def restore_xor_scheme_key_menu():
     pass
@@ -88,12 +142,10 @@ def create_2_of_3_xor_stripes(originals):
     
     # I'm too lazy to write this generic and careful right now
     # not even sure a more generic version is useful
-    assert(len(originals) == 3)
-    pieces_matrix = tuple( tuple(break_into_n(stream, 3))
+    assert(len(originals) == NUM_PARTS)
+    pieces_matrix = tuple( tuple(break_into_n(stream, NUM_PARTS))
                            for stream in originals )
-    return (
-        b''.join(row)
-        for row in 
+    return part_joiner(
         ( (pieces_matrix[0][0], pieces_matrix[2][1], pieces_matrix[1][2]),
           (pieces_matrix[1][0], pieces_matrix[0][1], pieces_matrix[2][2]),
           (pieces_matrix[2][0], pieces_matrix[1][1], pieces_matrix[0][2]) )

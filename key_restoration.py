@@ -17,6 +17,7 @@ from oaw.wif import (
     )
 from oaw.rfc_1760_dict_encode import words_iter_to_32_bytes
 from oaw.bitcoin_address import private_key_bytes_to_bitcoin_address
+from oaw.xor import xor_rfc1760_to_private_key
 
 def command_line_main():
     parser = OptionParser()
@@ -33,11 +34,18 @@ def command_line_main():
         action="store_const",
         const="rfc",
         )
+    parser.add_option(
+        "--xor-rfc1760",
+        dest="input_format",
+        action="store_const",
+        const="xor-rfc1760",
+        )
 
     (options, args) = parser.parse_args()
     private_key_convert = {
         'W': lambda a: wif_to_private_key_and_public_compressed(a[0]),
         'rfc': lambda a: (words_iter_to_32_bytes(a), True),
+        'xor-rfc1760': xor_rfc1760_to_private_key,
         }
 
     private_key_bytes, compressed = \
