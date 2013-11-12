@@ -9,6 +9,7 @@
 
 import os
 from os import urandom
+from textwrap import fill
 
 from .entropy import get_entropy_source_menu
 from .rfc_1760_dict_encode import (
@@ -78,8 +79,11 @@ DISPLAY_XOR_FIRST_PROMPT = \
 DISPLAY_COMPONENT_NUMBER_FMT = "component %s"
 NEXT_XOR_PROMPT = "hit enter when you're ready for the next xor component> "
 LAST_XOR_PROMPT = "last one. Hit enter to clear> "
+READY_PROMPT = "ready for the next component? Hit enter. > "
 
 def display_xor_components_with_shell_clear(components):
+    input("Hit enter when you're ready for the first xor component> ")
+
     for i, comp in enumerate(components, 1): 
         print(DISPLAY_COMPONENT_NUMBER_FMT % i)
         print(comp)
@@ -95,37 +99,41 @@ def display_xor_components_with_shell_clear(components):
             os.system('clear')
 
 def display_xor_components(components):
-    input("Hit enter when you're ready for the first xor component> ")
-
     components = tuple(components) # buffer
     if os.name == 'nt':
         display_xor_components_with_shell_clear(components)
     else:
         import curses
-        # still a work in progress
-        # curses.wrapper(display_xor_components_curses, components)
-        display_xor_components_with_shell_clear(components)
+        curses.wrapper(display_xor_components_curses, components)
 
 def display_xor_components_curses(stdscr, components):
     import curses
     stdscr.erase()
     
+    def fill_window(msg):
+       stdscr.addstr(fill(msg, curses.COLS))
+
+    def fill_window_w_newline(msg=""):
+       stdscr.addstr(fill(msg, curses.COLS)+"\n")
+
     for i, comp in enumerate(components, 1): 
-        stdscr.insstr(DISPLAY_COMPONENT_NUMBER_FMT % i)
-        stdscr.insstr(comp)
+        fill_window_w_newline(DISPLAY_COMPONENT_NUMBER_FMT % i)
+        fill_window(READY_PROMPT)
+        stdscr.refresh()
+        stdscr.getch()
+        stdscr.addstr("\n")
+
+        fill_window_w_newline(comp)
         if i < len(components):
-            stdscr.insstr(NEXT_XOR_PROMPT)
+            fill_window(NEXT_XOR_PROMPT)
         else:
-            stdscr.insstr(LAST_XOR_PROMPT)
+            fill_window(LAST_XOR_PROMPT)
+        stdscr.refresh()
+
         stdscr.getch()
 
         stdscr.erase()
     
-    curses.nocbreak()
-    stdscr.keypad(0)
-    curses.echo()
-    curses.endwin()
-
 def break_into_n(bytesies, n):
     length = len(bytesies)
     part_size = length//n
