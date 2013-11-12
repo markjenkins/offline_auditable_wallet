@@ -80,6 +80,12 @@ DISPLAY_COMPONENT_NUMBER_FMT = "component %s"
 NEXT_XOR_PROMPT = "hit enter when you're ready for the next xor component> "
 LAST_XOR_PROMPT = "last one. Hit enter to clear> "
 READY_PROMPT = "ready for the next component? Hit enter. > "
+WRITE_DOWN_PROMPT = (
+   "Write it down! On paper you will protect well from fire and theft or "
+   "on an encrypted password manager you will back up and not forget "
+   "the password of. Test after your hit enter> "
+   )
+TEST_REMEMBER_PROMPT = "Okay, you remember it right, test time, type it in!"
 
 def display_xor_components_with_shell_clear(components):
     input("Hit enter when you're ready for the first xor component> ")
@@ -108,6 +114,7 @@ def display_xor_components(components):
 
 def display_xor_components_curses(stdscr, components):
     import curses
+    curses.echo()
     stdscr.erase()
     
     def fill_window(msg):
@@ -116,14 +123,30 @@ def display_xor_components_curses(stdscr, components):
     def fill_window_w_newline(msg=""):
        stdscr.addstr(fill(msg, curses.COLS)+"\n")
 
-    for i, comp in enumerate(components, 1): 
+    def display_xor_component_curses_until_echoed_back_right(comp):
+       while True:
+          fill_window_w_newline(comp)
+          fill_window_w_newline(WRITE_DOWN_PROMPT)
+          stdscr.refresh()
+          stdscr.getch()
+          stdscr.erase()
+          fill_window_w_newline(TEST_REMEMBER_PROMPT)
+          attempt = stdscr.getstr().decode().strip()
+          repaired_attempt = " ".join(attempt.upper().split())
+          if repaired_attempt == comp:
+             fill_window_w_newline("you got it")
+             break
+          else:
+             fill_window_w_newline("wrong, try again")
+
+    for i, comp in enumerate(components, 1):
         fill_window_w_newline(DISPLAY_COMPONENT_NUMBER_FMT % i)
         fill_window(READY_PROMPT)
         stdscr.refresh()
         stdscr.getch()
         stdscr.addstr("\n")
+        display_xor_component_curses_until_echoed_back_right(comp)
 
-        fill_window_w_newline(comp)
         if i < len(components):
             fill_window(NEXT_XOR_PROMPT)
         else:
