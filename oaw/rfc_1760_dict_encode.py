@@ -414,6 +414,7 @@ def show_wallet_dict_words(private_key_bytes, compressed_public_key):
     words = tuple(bytes_to_words(private_key_bytes))
     print( "your private key is encoded by these %s words" % len(words) )
     print( " ".join(words) )
+    return False
 
 def restore_dict_encoded_key():
     words_together = input("input your RFC 1760 dictionary words> ")
