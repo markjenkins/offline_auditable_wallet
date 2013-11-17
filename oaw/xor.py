@@ -118,10 +118,10 @@ def display_xor_components_curses(stdscr, components):
     stdscr.erase()
     
     def fill_window(msg):
-       stdscr.addstr(fill(msg, curses.COLS))
+       stdscr.addstr(fill(msg, curses.COLS-1))
 
     def fill_window_w_newline(msg=""):
-       stdscr.addstr(fill(msg, curses.COLS)+"\n")
+       stdscr.addstr(fill(msg, curses.COLS-1)+"\n")
 
     def display_xor_component_curses_until_echoed_back_right(comp):
        while True:
