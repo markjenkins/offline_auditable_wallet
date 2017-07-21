@@ -75,7 +75,12 @@ def reduction_of_bytes_to_word_numbers(a, new_byte):
             (output_bytes, previous_bits, previous_bits_count), new_byte)
         ) # return ternary expression
 
-def bytes_to_word_numbers(bytes_msg):
+def calc_extra_pad_bytes_required(bits_shortfall):
+    return ( 0
+             if bits_shortfall == 0
+             else ( (bits_shortfall // BITS_PER_BYTE)+1 ) )
+
+def bytes_to_word_numbers(bytes_msg, padding=None):
     bits_storage_required = len(bytes_msg)*BITS_PER_BYTE
     words_required = (
         (bits_storage_required // BITS_PER_WORD)
@@ -85,21 +90,24 @@ def bytes_to_word_numbers(bytes_msg):
 
     assert( (words_required*BITS_PER_WORD) >= bits_storage_required )
 
-    extra_pad_bytes_required = (
-        0 if bits_shortfall == 0
-        else (
-            (bits_shortfall // BITS_PER_BYTE)+1 ) )
-
-    bytes_to_encode = bytes_msg + ( b'\x00' * extra_pad_bytes_required )
+    extra_pad_bytes_required = calc_extra_pad_bytes_required(bits_shortfall)
+    if padding == None:
+        bytes_to_encode = bytes_msg + ( b'\x00' * extra_pad_bytes_required )
+    else:
+        assert(len(padding)>=extra_pad_bytes_required)
+        bytes_to_encode = bytes_msg + padding[:extra_pad_bytes_required]
     return reduce( reduction_of_bytes_to_word_numbers,
                    bytes_to_encode, (() , 0, 0) )[0]
 
 def numbers_to_words(numbers_stream, dictionary):
     return ( dictionary[num] for num in numbers_stream )
 
-def bytes_to_words(input_bytes, dictionary):
+def bytes_to_words(input_bytes, dictionary, padding=None):
     assert( len(dictionary) == DICTIONARY_SIZE )
-    return numbers_to_words(bytes_to_word_numbers(input_bytes), dictionary)
+    return numbers_to_words(bytes_to_word_numbers(input_bytes,
+                                                  padding=padding),
+                            dictionary
+    ) # numbers_to_words
 
 
 def new_bytes_from_bits(previous_bits, previous_bits_count, new_word_number):
