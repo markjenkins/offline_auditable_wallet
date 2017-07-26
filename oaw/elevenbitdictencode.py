@@ -96,8 +96,31 @@ def bytes_to_word_numbers(bytes_msg, padding=None):
     else:
         assert(len(padding)>=extra_pad_bytes_required)
         bytes_to_encode = bytes_msg + padding[:extra_pad_bytes_required]
+
+    # call reduction_of_bytes_to_word_numbers repeately with reduce()
+    # the sequence we feed to reduce() (first argument) is the bytes 
+    # we're encoding
+    #
+    # the initial state and state passed to all calls to
+    # reduction_of_bytes_to_word_numbers() is a tuple consiting of
+    #  [0] "output_bytes", a tuple of word numbers accumulated so far
+    #                      initilized as an empty tuple
+    #
+    #  [1] "previous_bits" an integer representation of a byte (0<p<=255)
+    #                      that will always contain leftover
+    #                      unused bits from the last call to reduction_of_bytes..
+    #                      in the initilization case this is just None because
+    #                      there are unused bits fist, meaningful on the second
+    #                      call of reduction_of_bytes
+    #
+    #  [2] "previous_bits_count" An integer counting the number of unused bits
+    #                            that [1] previous_bits includes.
+    #                            This is 0 in the initialization case.
+    #
+    # after reduce() returns, we extract the [0] element which has the
+    # accumulated word numbers as a tuple
     return reduce( reduction_of_bytes_to_word_numbers,
-                   bytes_to_encode, (() , 0, 0) )[0]
+                   bytes_to_encode, (() , None, 0) )[0]
 
 def numbers_to_words(numbers_stream, dictionary):
     return ( dictionary[num] for num in numbers_stream )
