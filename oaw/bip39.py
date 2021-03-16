@@ -18,6 +18,8 @@ from os.path import dirname, join as path_join
 from itertools import zip_longest
 from hashlib import sha256
 
+ALLOWED_ENTROPY_SIZES = (128, 160, 192, 224, 256)
+
 # wordlist from
 # https://github.com/bitcoin/bips/blob/master/bip-0039/english.txt
 THIS_DIR = dirname(__file__)
@@ -37,17 +39,44 @@ def byte_to_padded_binary_string(b, padding=8):
 
 
 def bytes_to_bip39_w_checksum(input_bytes):
+    input_size_bits = len(input_bytes)*8
+
+    if input_size_bits not in ALLOWED_ENTROPY_SIZES:
+        raise Exception(
+            "input size in bits (%d) is not one of %s" % (
+                input_size_bits,
+                ', '.join(str(s) for s in ALLOWED_ENTROPY_SIZES)))
+
     binary_representation = ''.join( byte_to_padded_binary_string(b)
                                      for b in input_bytes)
 
-    input_size_bits = len(input_bytes)*8
+    # I'm not one to follow the math, but because the input is a multiple of
+    # 32 bits, the checksum size in bits reflects the number of 32 bit
+    # chunks in the input
+    #
+    # furthermore, we'll end up with input_size_bits+checksum_size_bits being
+    # a multiple of 11
+    # the bip39 docs provide a table
+    # input  checksum total words
+    # 128    4        132   12
+    # 160    5        165   15
+    # 192    6        198   18
+    # 224    7        231   21
+    # 256    8        264   24
+    assert( (input_size_bits % 32) == 0 )
     checksum_size_bits = input_size_bits //32
+    assert( ( (input_size_bits + checksum_size_bits) % 11)==0 )
     
     checksum = sha256(input_bytes)
     checksum_binary = ''.join(byte_to_padded_binary_string(b)
                               for b in checksum.digest() )
     binary_representation_w_checksum = (
         binary_representation + checksum_binary[:checksum_size_bits])
+
+    # a sanity check, the binary representation is a multiple of 11 bits
+    # so we can use words from the 2**11 == 2048 sized dictionary
+    # the limitations on input_size_bits and calculation of the checksum
+    # size assures this
     assert( len(binary_representation_w_checksum) % 11 == 0 )
     
     eleven_bit_chunks = [ ''.join(e)
