@@ -38,7 +38,7 @@ def byte_to_padded_binary_string(b, padding=8):
     return padding_format % int(bin(b)[2:])
 
 
-def bytes_to_bip39_w_checksum(input_bytes):
+def bip39_checksum_calc(input_bytes):
     input_size_bits = len(input_bytes)*8
 
     if input_size_bits not in ALLOWED_ENTROPY_SIZES:
@@ -46,9 +46,6 @@ def bytes_to_bip39_w_checksum(input_bytes):
             "input size in bits (%d) is not one of %s" % (
                 input_size_bits,
                 ', '.join(str(s) for s in ALLOWED_ENTROPY_SIZES)))
-
-    binary_representation = ''.join( byte_to_padded_binary_string(b)
-                                     for b in input_bytes)
 
     # I'm not one to follow the math, but because the input is a multiple of
     # 32 bits, the checksum size in bits reflects the number of 32 bit
@@ -67,11 +64,16 @@ def bytes_to_bip39_w_checksum(input_bytes):
     checksum_size_bits = input_size_bits //32
     assert( ( (input_size_bits + checksum_size_bits) % 11)==0 )
     
-    checksum = sha256(input_bytes)
-    checksum_binary = ''.join(byte_to_padded_binary_string(b)
-                              for b in checksum.digest() )
-    binary_representation_w_checksum = (
-        binary_representation + checksum_binary[:checksum_size_bits])
+    checksum256 = sha256(input_bytes)
+    checksum8 = checksum256.digest()[0] # first byte
+    return byte_to_padded_binary_string(checksum8)[:checksum_size_bits]
+
+def bytes_to_bip39_w_checksum(input_bytes):
+    binary_representation = ''.join( byte_to_padded_binary_string(b)
+                                     for b in input_bytes)
+    checksum_binary_str = bip39_checksum_calc(input_bytes)
+    binary_representation_w_checksum = \
+        binary_representation + checksum_binary_str
 
     # a sanity check, the binary representation is a multiple of 11 bits
     # so we can use words from the 2**11 == 2048 sized dictionary
