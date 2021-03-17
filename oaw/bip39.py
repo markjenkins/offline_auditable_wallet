@@ -19,12 +19,17 @@ from itertools import zip_longest
 from hashlib import sha256
 
 ALLOWED_ENTROPY_SIZES = (128, 160, 192, 224, 256)
+BITS_PER_WORD = 11
 
 # wordlist from
 # https://github.com/bitcoin/bips/blob/master/bip-0039/english.txt
 THIS_DIR = dirname(__file__)
 with open( path_join(THIS_DIR, 'bip39_english.txt') ) as f:
     BIP39_ENGLISH_LIST = [ line.strip() for line in f ]
+
+# dictionary comprehension
+BIP39_ENGLISH_LIST_TO_INDEX = { word: i
+                                for i,word in enumerate(BIP39_ENGLISH_LIST) }
 
 # from the itertools docs
 def grouper(iterable, n, fillvalue=None):
@@ -62,7 +67,7 @@ def bip39_checksum_calc(input_bytes):
     # 256    8        264   24
     assert( (input_size_bits % 32) == 0 )
     checksum_size_bits = input_size_bits //32
-    assert( ( (input_size_bits + checksum_size_bits) % 11)==0 )
+    assert( ( (input_size_bits + checksum_size_bits) % BITS_PER_WORD)==0 )
     
     checksum256 = sha256(input_bytes)
     checksum8 = checksum256.digest()[0] # first byte
@@ -79,13 +84,45 @@ def bytes_to_bip39_w_checksum(input_bytes):
     # so we can use words from the 2**11 == 2048 sized dictionary
     # the limitations on input_size_bits and calculation of the checksum
     # size assures this
-    assert( len(binary_representation_w_checksum) % 11 == 0 )
+    assert( len(binary_representation_w_checksum) % BITS_PER_WORD == 0 )
     
     eleven_bit_chunks = [ ''.join(e)
                           for e in grouper(binary_representation_w_checksum,
-                                           11) ]
+                                           BITS_PER_WORD) ]
 
     return ' '.join( BIP39_ENGLISH_LIST[int(e,2)]  for e in eleven_bit_chunks )
+
+class Bip39ChecksumError(Exception): pass
+
+def bip39_words_to_bytes(words_str):
+    words = words_str.split(' ')
+
+    bit_count_words = len(words)*BITS_PER_WORD # *11
+    # the data part is always a multiple of 32 bits,
+    # so the remainder is checksum
+    bit_count_checksum = bit_count_words % 32
+
+    bit_count_data = bit_count_words - bit_count_checksum
+    if bit_count_data not in ALLOWED_ENTROPY_SIZES:
+        raise Exception("%d bits is not a valid data size for bip39" %
+                        bit_count_data)
+
+    binary_representation = ''.join(
+        byte_to_padded_binary_string(BIP39_ENGLISH_LIST_TO_INDEX[word],
+                                     padding=BITS_PER_WORD)
+        for word in words)
+    binary_representation_data = binary_representation[:bit_count_data]
+    assert( (len(binary_representation_data) % 8) == 0 )
+    assert( len(binary_representation_data) == bit_count_data )
+    binary_representation_checksum = binary_representation[bit_count_data:]
+    assert( len(binary_representation_checksum) == bit_count_checksum )
+
+    data_bytes = bytes( int(''.join(b for b in chunk), 2)
+                        for chunk in grouper(binary_representation_data, 8))
+    checksum_calc = bip39_checksum_calc(data_bytes)
+    if checksum_calc != binary_representation_checksum:
+        raise Bip39ChecksumError()
+    return data_bytes
 
 if __name__ == "__main__":  
     from binascii import a2b_hex
@@ -96,6 +133,10 @@ if __name__ == "__main__":
            'heavy loan hen recycle mean devote' == 
         bytes_to_bip39_w_checksum(test_entropy))
 
+    assert( test_entropy ==
+            bip39_words_to_bytes('alert record income curve mercy tree '
+                                 'heavy loan hen recycle mean devote') )
+    
     # test vectors from
     # https://github.com/trezor/python-mnemonic/blob/master/vectors.json
     TESTS = [
@@ -246,6 +287,8 @@ if __name__ == "__main__":
     ]
     
     for test_binary, mnemnoic, seed, key in TESTS:
-        assert( bytes_to_bip39_w_checksum(a2b_hex(test_binary))
+        test_binary_bytes = a2b_hex(test_binary)
+        assert( bytes_to_bip39_w_checksum(test_binary_bytes)
                 ==
                 mnemnoic )
+        assert( bip39_words_to_bytes( mnemnoic ) == test_binary_bytes )
