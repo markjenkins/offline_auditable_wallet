@@ -16,7 +16,8 @@
 
 from os.path import dirname, join as path_join
 from itertools import zip_longest
-from hashlib import sha256
+from hashlib import sha256, pbkdf2_hmac
+import unicodedata
 
 ALLOWED_ENTROPY_SIZES = (128, 160, 192, 224, 256)
 BITS_PER_WORD = 11
@@ -124,6 +125,16 @@ def bip39_words_to_bytes(words_str):
         raise Bip39ChecksumError()
     return data_bytes
 
+def nfkd_normalize_and_utf8_encode(input_string):
+    return unicodedata.normalize('NFKD', input_string).encode('utf-8')
+
+def seed_from_mnemonic_and_passphrase(mnemonic, passphrase=''):
+    bip39_words_to_bytes(mnemonic) # raises Bip39ChecksumError if bad checksum
+
+    password = nfkd_normalize_and_utf8_encode(mnemonic)
+    salt = nfkd_normalize_and_utf8_encode('mnemonic' + passphrase)
+    return pbkdf2_hmac('sha512', password, salt, 2048)
+
 if __name__ == "__main__":  
     from binascii import a2b_hex
     # test vector from
@@ -139,6 +150,8 @@ if __name__ == "__main__":
     
     # test vectors from
     # https://github.com/trezor/python-mnemonic/blob/master/vectors.json
+    # each test consists of initial entropy, mnemonic words with checksum for
+    # that entropy, a seed (with passphrase "TREZOR"), and a master private key
     TESTS = [
         [
             "00000000000000000000000000000000",
@@ -292,3 +305,6 @@ if __name__ == "__main__":
                 ==
                 mnemnoic )
         assert( bip39_words_to_bytes( mnemnoic ) == test_binary_bytes )
+        assert( seed_from_mnemonic_and_passphrase(mnemnoic, "TREZOR").hex()
+                ==
+                seed)
